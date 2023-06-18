@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes Posting Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/index-style.css">
+  <script>
+    function validateForm() {
+      var noteInput = document.getElementById("note-input");
+      if (noteInput.value.trim() === "") {
+        alert("Please enter a note before submitting.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Notes Posting Website</h1>
+    <div class="user-email">
+      {% if user.is_authenticated %}
+        Welcome, {{ user.email }}
+      {% endif %}
+    </div>
+    <div class="notes-section">
+      <form class="note-form" method="POST" action="{% url 'home' %}" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <textarea class="note-input" id="note-input" name="note_content" placeholder="Write your note"></textarea>
+        <button class="submit-button" type="submit">Post Note</button>
+      </form>
+      <div class="note-cards">
+        {% for note in page_obj %}
+        <div class="note-card">
+          <p>"{{ note.content }}"</p>
+          <p class="note-timestamp">{{ note.timestamp|date }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        
+        <span class="current-page">{{ page_obj.number }}</span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>
